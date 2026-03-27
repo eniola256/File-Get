@@ -16,6 +16,14 @@ const requestSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    receiptPublicId: {
+      type: String,
+      required: true,
+    },
+    receiptHash: {
+      type: String,
+      required: true,
+    },
     payerName: {
       type: String,
       required: true,
@@ -46,6 +54,7 @@ const requestSchema = new mongoose.Schema(
 );
 
 requestSchema.index({ user: 1, file: 1 }, { unique: true });
+requestSchema.index({ receiptHash: 1 });
 
 const Request = mongoose.models.Request || mongoose.model("Request", requestSchema);
 

@@ -7,6 +7,7 @@ import morgan from "morgan";
 import adminRouter from "./routes/admin.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import filesRouter from "./routes/files.routes.js";
+import requestsRouter from "./routes/requests.routes.js";
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.get("/health", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/files", filesRouter);
+app.use("/api/requests", requestsRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });
@@ -66,6 +68,18 @@ app.use((err, req, res, next) => {
     if (err.code === "LIMIT_FILE_SIZE") {
       return res.status(413).json({ error: "File too large" });
     }
+    return res.status(400).json({ error: err.message });
+  }
+
+  if (err?.code === 11000) {
+    return res.status(409).json({ error: "Duplicate key error" });
+  }
+
+  if (err?.name === "CastError") {
+    return res.status(400).json({ error: "Invalid identifier" });
+  }
+
+  if (err?.name === "ValidationError") {
     return res.status(400).json({ error: err.message });
   }
 

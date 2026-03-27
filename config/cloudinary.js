@@ -1,6 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,8 +7,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Textbook uploads use memoryStorage so `req.file.buffer` is available
-// for SHA-256 hashing before we manually push to Cloudinary.
+// Both textbooks and receipts use memoryStorage so `req.file.buffer` is available:
+// - Textbooks: SHA-256 hashing before upload
+// - Receipts: image hash + EXIF/visual checks before upload
 export const uploadFile = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
@@ -24,18 +24,8 @@ export const uploadFile = multer({
   },
 });
 
-// Storage for payment receipt images
-const receiptStorage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "receipts",
-    resource_type: "image",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-  },
-});
-
 export const uploadReceipt = multer({
-  storage: receiptStorage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
     const allowed = ["image/jpeg", "image/png", "image/webp"];
@@ -48,4 +38,15 @@ export const uploadReceipt = multer({
     return cb(err, false);
   },
 });
+
+export const streamToCloudinary = (buffer, options) =>
+  new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
+      if (error) return reject(error);
+      return resolve(result);
+    });
+
+    stream.end(buffer);
+  });
+
 export default cloudinary;

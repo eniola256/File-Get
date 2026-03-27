@@ -16,12 +16,15 @@ Express + MongoDB (Mongoose) API with JWT auth and Cloudinary uploads.
    - `JWT_SECRET=...` (generate one: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`)
    - `JWT_EXPIRES_IN=7d` (optional)
 5. Configure Cloudinary in `.env`:
-   - `CLOUDINARY_CLOUD_NAME=...`
-   - `CLOUDINARY_API_KEY=...`
-   - `CLOUDINARY_API_SECRET=...`
-6. Start the server:
-   - Dev: `npm.cmd run dev`
-   - Prod: `npm.cmd start`
+    - `CLOUDINARY_CLOUD_NAME=...`
+    - `CLOUDINARY_API_KEY=...`
+    - `CLOUDINARY_API_SECRET=...`
+6. (Optional) Configure SMTP email in `.env` (request notifications):
+    - `SMTP_HOST=...`, `SMTP_PORT=...`, `SMTP_USER=...`, `SMTP_PASS=...`
+    - If not set, emails are skipped (API still works).
+7. Start the server:
+    - Dev: `npm.cmd run dev`
+    - Prod: `npm.cmd start`
 
 ## Endpoints
 - `GET /health` -> `{ ok: true, db: { state } }`
@@ -44,14 +47,23 @@ Admin (admin only):
 - `POST /api/admin/users/:id/reject`
 - `DELETE /api/admin/users/:id`
 
+Requests (student only):
+- `POST /api/requests` (Bearer token, `multipart/form-data`):
+  - file field: `receipt` (jpg/png/webp)
+  - body fields: `fileId`, `payerName`, `relationship` (`self` | `parent` | `guardian`)
+- `GET /api/requests/my` (Bearer token) -> `{ requests }`
 
+Example auth response:
+
+```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YzUzMjVhNWVkNTYwY2QyNzY2YzRjYiIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzc0NTMxMTYyLCJleHAiOjE3NzUxMzU5NjJ9.mHTfXrMNPdknw1dYRJU9F6zJuSzuANQb7uM7iz8tR6k",
+  "token": "<jwt>",
   "user": {
-    "id": "69c5325a5ed560cd2766c4cb",
-    "name": "Rep One",
-    "email": "rep1@example.com",
+    "id": "<userId>",
+    "name": "Test User",
+    "email": "test@example.com",
     "role": "student",
     "suspended": false
   }
 }
+```
