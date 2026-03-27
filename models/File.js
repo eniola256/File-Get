@@ -5,6 +5,7 @@ const fileSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      trim: true,
     },
     originalName: {
       type: String,
@@ -15,6 +16,10 @@ const fileSchema = new mongoose.Schema(
       required: true,
     },
     fileUrl: {
+      type: String,
+      required: true,
+    },
+    publicId: {
       type: String,
       required: true,
     },

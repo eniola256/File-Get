@@ -32,9 +32,10 @@ Auth:
 - `GET /api/auth/me` (Bearer token) -> `{ user }`
 
 Files (Cloudinary):
-- `GET /api/files` -> `{ files }`
-- `GET /api/files/:id` -> `{ file }`
-- `POST /api/files/upload` (rep only, Bearer token, multipart field name: `file`, plus `title` and `price`) -> `{ file }`
+- `GET /api/files` (Bearer token) -> `{ files }`
+- `GET /api/files/my` (rep only, Bearer token) -> `{ files }`
+- `POST /api/files` (rep only, Bearer token, multipart field name: `file`, plus `title` and `price`) -> `{ file }`
+- `DELETE /api/files/:id` (rep owns file or admin, Bearer token) -> `{ success }`
 
 Admin (admin only):
 - `GET /api/admin/users` -> `{ users }`

@@ -1,33 +1,28 @@
 import express from "express";
 
+import {
+  deleteFile,
+  getAllFiles,
+  getMyFiles,
+  uploadTextbook,
+} from "../controllers/files.controller.js";
 import { uploadFile } from "../config/cloudinary.js";
-import { uploadTextbook, listFiles, getFileById } from "../controllers/file.controller.js";
-import authMiddleware from "../middleware/authMiddleware.js";
-import roleMiddleware from "../middleware/roleMiddleware.js";
+import { authenticate } from "../middleware/authMiddleware.js";
+import { requireRole } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-// Public listing (adjust later if you want this protected)
-router.get("/", listFiles);
-router.get("/:id", getFileById);
+// Browse all textbooks — any authenticated user
+router.get("/", authenticate, getAllFiles);
 
-// Textbook upload (PDF) - reps only
-router.post(
-  "/upload",
-  authMiddleware,
-  roleMiddleware("rep"),
-  uploadFile.single("file"),
-  uploadTextbook,
-);
+// Rep's own uploaded files — rep only
+// Note: /my must be defined before /:id if you later add GET /:id
+router.get("/my", authenticate, requireRole("rep"), getMyFiles);
 
-// Backwards compatible alias: POST /api/files
-router.post(
-  "/",
-  authMiddleware,
-  roleMiddleware("rep"),
-  uploadFile.single("file"),
-  uploadTextbook,
-);
+// Upload a textbook — rep only
+router.post("/", authenticate, requireRole("rep"), uploadFile.single("file"), uploadTextbook);
+
+// Delete a file — rep (own files) or admin (any file)
+router.delete("/:id", authenticate, requireRole("rep", "admin"), deleteFile);
 
 export default router;
-
