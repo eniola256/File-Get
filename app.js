@@ -13,9 +13,15 @@ app.disable("x-powered-by");
 
 app.use(helmet());
 
-const corsOrigin = process.env.CORS_ORIGIN || "*";
-if (corsOrigin === "*" || corsOrigin.trim() === "") {
-  app.use(cors());
+const corsOrigin = process.env.CORS_ORIGIN;
+if (!corsOrigin || corsOrigin.trim() === "") {
+  console.warn(
+    "CORS is disabled. Set CORS_ORIGIN to a comma-separated allowlist of origins (e.g. http://localhost:5173).",
+  );
+} else if (corsOrigin.trim() === "*") {
+  console.warn(
+    "Refusing to enable open CORS (CORS_ORIGIN='*'). Set CORS_ORIGIN to a comma-separated allowlist instead.",
+  );
 } else {
   const allowlist = corsOrigin
     .split(",")

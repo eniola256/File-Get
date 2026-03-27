@@ -1,5 +1,3 @@
-import bcrypt from "bcryptjs";
-
 import User from "../models/User.js";
 import { signToken } from "../utils/jwt.js";
 
@@ -35,13 +33,10 @@ export async function register(req, res, next) {
       return res.status(409).json({ message: "Email already in use" });
     }
 
-    const saltRounds = 10;
-    const hashed = await bcrypt.hash(password, saltRounds);
-
     const user = await User.create({
       name,
       email: normalizedEmail,
-      password: hashed,
+      password,
     });
 
     const token = signToken({ id: user._id, role: user.role });
@@ -73,7 +68,7 @@ export async function login(req, res, next) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const ok = await bcrypt.compare(password, user.password);
+    const ok = await user.comparePassword(password);
     if (!ok) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
