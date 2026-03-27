@@ -4,6 +4,7 @@ import helmet from "helmet";
 import mongoose from "mongoose";
 import morgan from "morgan";
 
+import adminRouter from "./routes/admin.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import filesRouter from "./routes/files.routes.js";
 
@@ -53,6 +54,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/admin", adminRouter);
 app.use("/api/files", filesRouter);
 
 app.use((req, res) => {

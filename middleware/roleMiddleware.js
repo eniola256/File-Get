@@ -13,3 +13,4 @@ export default function roleMiddleware(...allowedRoles) {
   };
 }
 
+export const requireRole = (...allowedRoles) => roleMiddleware(...allowedRoles);

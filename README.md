@@ -36,6 +36,13 @@ Files (Cloudinary):
 - `GET /api/files/:id` -> `{ file }`
 - `POST /api/files/upload` (rep only, Bearer token, multipart field name: `file`, plus `title` and `price`) -> `{ file }`
 
+Admin (admin only):
+- `GET /api/admin/users` -> `{ users }`
+- `POST /api/admin/users/:id/approve`
+- `POST /api/admin/users/:id/suspend`
+- `POST /api/admin/users/:id/reject`
+- `DELETE /api/admin/users/:id`
+
 
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YzUzMjVhNWVkNTYwY2QyNzY2YzRjYiIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzc0NTMxMTYyLCJleHAiOjE3NzUxMzU5NjJ9.mHTfXrMNPdknw1dYRJU9F6zJuSzuANQb7uM7iz8tR6k",

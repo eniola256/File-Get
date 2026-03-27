@@ -68,6 +68,12 @@ export async function login(req, res, next) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    if (user.suspended) {
+      return res.status(403).json({
+        message: "Your account has been suspended. Contact your administrator.",
+      });
+    }
+
     const ok = await user.comparePassword(password);
     if (!ok) {
       return res.status(401).json({ message: "Invalid credentials" });
